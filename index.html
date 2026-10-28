@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TNPSC ONLINE TEST</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#172033}
+header{background:#123b75;color:white;text-align:center;padding:22px 10px}
+header h1{margin:0;font-size:26px}
+header p{margin-bottom:0}
+main{max-width:700px;margin:20px auto;padding:12px}
+.card{background:white;padding:20px;margin-bottom:16px;border-radius:14px;box-shadow:0 3px 10px #0001}
+button{width:100%;padding:13px;margin-top:10px;border:0;border-radius:8px;background:#1769d2;color:white;font-size:16px;cursor:pointer}
+.option{text-align:left;background:#e5e7eb;color:#172033}
+.option.correct{background:#16a34a;color:white}
+.option.wrong{background:#dc2626;color:white}
+button:disabled{opacity:1}
+#feedback{font-weight:bold}
+#quiz[hidden]{display:none}
+footer{text-align:center;padding:20px;color:#555}
+</style>
+</head>
+<body>
+<header>
+<h1>🏠 TNPSC ONLINE TEST</h1>
+<p>Created by Aspirant Anbu B.Sc</p>
+</header>
+
+<main>
+<div class="card">
+<h2>📖 GENERAL TAMIL</h2>
+<button onclick="startTest('tamil')">Start Test</button>
+</div>
+<div class="card">
+<h2>📚 GENERAL STUDIES</h2>
+<button onclick="startTest('gs')">Start Test</button>
+</div>
+<div class="card">
+<h2>➗ APTITUDE</h2>
+<button onclick="startTest('aptitude')">Start Test</button>
+</div>
+
+<div class="card" id="quiz" hidden>
+<h2 id="subject"></h2>
+<p id="progress"></p>
+<h3 id="question"></h3>
+<div id="options"></div>
+<p id="feedback"></p>
+<button id="next" onclick="nextQuestion()" hidden>Next Question ➡️</button>
+<div id="result"></div>
+</div>
+</main>
+
+<footer>TNPSC ONLINE TEST | Aspirant Anbu B.Sc</footer>
+
+<script>
+const tests={
+tamil:[
+{q:"திருக்குறளை இயற்றியவர் யார்?",options:["கம்பர்","திருவள்ளுவர்","அவ்வையார்","இளங்கோவடிகள்"],answer:1},
+{q:"உயிரெழுத்துகள் எத்தனை?",options:["10","12","18","216"],answer:1},
+{q:"தமிழின் முதல் இலக்கண நூல் எது?",options:["நன்னூல்","தொல்காப்பியம்","திருக்குறள்","சிலப்பதிகாரம்"],answer:1},
+{q:"திருக்குறளில் மொத்தம் எத்தனை குறள்கள் உள்ளன?",options:["1000","1200","1330","1500"],answer:2},
+{q:"மெய்யெழுத்துகள் எத்தனை?",options:["12","18","216","247"],answer:1}
+],
+gs:[
+{q:"இந்திய அரசியலமைப்பு நடைமுறைக்கு வந்த நாள் எது?",options:["15 ஆகஸ்ட் 1947","26 ஜனவரி 1950","2 அக்டோபர் 1948","26 நவம்பர் 1949"],answer:1},
+{q:"இந்தியாவின் தேசிய விலங்கு எது?",options:["சிங்கம்","யானை","புலி","மயில்"],answer:2},
+{q:"இந்தியாவின் தலைநகரம் எது?",options:["மும்பை","சென்னை","புதுடெல்லி","கொல்கத்தா"],answer:2},
+{q:"இந்தியாவின் முதல் குடியரசுத் தலைவர் யார்?",options:["டாக்டர் ராஜேந்திர பிரசாத்","ஜவஹர்லால் நேரு","சர்தார் பட்டேல்","டாக்டர் அம்பேத்கர்"],answer:0},
+{q:"தமிழ்நாட்டின் தலைநகரம் எது?",options:["மதுரை","சென்னை","சேலம்","திருச்சி"],answer:1}
+],
+aptitude:[
+{q:"25 + 35 = ?",options:["50","55","60","65"],answer:2},
+{q:"100-ன் 10% எவ்வளவு?",options:["5","10","15","20"],answer:1},
+{q:"12 × 8 = ?",options:["84","96","88","108"],answer:1},
+{q:"200-ன் 25% எவ்வளவு?",options:["25","40","50","75"],answer:2},
+{q:"144-ன் வர்க்கமூலம் என்ன?",options:["10","11","12","14"],answer:2}
+]
+};
+
+let currentTest=[],index=0,correct=0,wrong=0,answered=false,currentSubject="";
+
+function startTest(subject){
+currentSubject=subject;
+currentTest=tests[subject];
+index=0;correct=0;wrong=0;
+document.getElementById("quiz").hidden=false;
+document.getElementById("subject").textContent=
+subject==="tamil"?"📖 GENERAL TAMIL":
+subject==="gs"?"📚 GENERAL STUDIES":"➗ APTITUDE";
+showQuestion();
+document.getElementById("quiz").scrollIntoView({behavior:"smooth"});
+}
+
+function showQuestion(){
+answered=false;
+const item=currentTest[index];
+document.getElementById("progress").textContent=
+"Question "+(index+1)+" of "+currentTest.length;
+document.getElementById("question").textContent=item.q;
+document.getElementById("feedback").textContent="";
+document.getElementById("result").textContent="";
+document.getElementById("next").hidden=true;
+document.getElementById("next").textContent=
+index===currentTest.length-1?"View Result 🏆":"Next Question ➡️";
+const box=document.getElementById("options");
+box.innerHTML="";
+item.options.forEach((option,i)=>{
+const b=document.createElement("button");
+b.className="option";
+b.textContent=String.fromCharCode(65+i)+". "+option;
+b.onclick=()=>chooseAnswer(i,b);
+box.appendChild(b);
+});
+}
+
+function chooseAnswer(selected,selectedButton){
+if(answered)return;
+answered=true;
+const item=currentTest[index];
+const buttons=document.querySelectorAll("#options .option");
+buttons.forEach((b,i)=>{
+b.disabled=true;
+if(i===item.answer)b.classList.add("correct");
+});
+const feedback=document.getElementById("feedback");
+if(selected===item.answer){
+correct++;
+feedback.textContent="✅ Correct Answer!";
+feedback.style.color="#16a34a";
+}else{
+wrong++;
+selectedButton.classList.add("wrong");
+feedback.textContent="❌ Wrong Answer! Green colour shows the correct answer.";
+feedback.style.color="#dc2626";
+}
+document.getElementById("next").hidden=false;
+}
+
+function nextQuestion(){
+if(!answered)return;
+if(index<currentTest.length-1){
+index++;
+showQuestion();
+}else{
+showResult();
+}
+}
+
+function showResult(){
+document.getElementById("progress").textContent="Test Completed";
+document.getElementById("question").textContent="🏆 YOUR RESULTS";
+document.getElementById("options").innerHTML="";
+document.getElementById("feedback").textContent="";
+document.getElementById("next").hidden=true;
+const total=currentTest.length;
+document.getElementById("result").innerHTML=
+"Total Questions: "+total+
+"<br>Correct Answers: "+correct+
+"<br>Wrong Answers: "+wrong+
+"<br>Total Marks: "+correct+" / "+total+
+"<br>Percentage: "+Math.round(correct/total*100)+"%"+
+'<br><button onclick="startTest(currentSubject)">🔄 Retake Test</button>';
+}
+</script>
+</body>
+</html>
